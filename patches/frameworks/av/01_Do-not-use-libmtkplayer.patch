@@ -1,0 +1,40 @@
+From a87aa17dc0ebbf08998312ed11056dfbf4184a69 Mon Sep 17 00:00:00 2001
+From: cerg2010cerg2010 <cerg2010cerg2010@mail.ru>
+Date: Sat, 22 Jul 2017 16:30:02 +0000
+Subject: [PATCH 1/1] Do not use libmtkplayer
+
+Change-Id: I2fa902054311c0ad390a80456d32935f5329ce5c
+---
+ media/libmediaplayerservice/Android.mk             | 2 +-
+ media/libmediaplayerservice/MediaPlayerFactory.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/media/libmediaplayerservice/Android.mk b/media/libmediaplayerservice/Android.mk
+index 08d53260b..fa5a4432f 100644
+--- a/media/libmediaplayerservice/Android.mk
++++ b/media/libmediaplayerservice/Android.mk
+@@ -60,7 +60,7 @@ LOCAL_C_INCLUDES :=                                                 \
+ 
+ # Mediatek
+ ifeq ($(strip $(BOARD_HAS_MTK_HARDWARE)),true)
+-LOCAL_SHARED_LIBRARIES += libmtkplayer
++# LOCAL_SHARED_LIBRARIES += libmtkplayer
+ endif
+ 
+ LOCAL_CFLAGS += -Werror -Wno-error=deprecated-declarations -Wall #-DLOG_NDEBUG=0
+diff --git a/media/libmediaplayerservice/MediaPlayerFactory.cpp b/media/libmediaplayerservice/MediaPlayerFactory.cpp
+index e378f3ca2..2d0327cd2 100644
+--- a/media/libmediaplayerservice/MediaPlayerFactory.cpp
++++ b/media/libmediaplayerservice/MediaPlayerFactory.cpp
+@@ -258,7 +258,7 @@ class FMPlayerFactory : public MediaPlayerFactory::IFactory {
+ 
+     virtual sp<MediaPlayerBase> createPlayer(pid_t /* pid */) {
+         ALOGV("Create FM Player");
+-        return new FMAudioPlayer();
++        return NULL;//new FMAudioPlayer();
+     }
+ };
+ #endif
+-- 
+2.13.3
+

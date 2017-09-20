@@ -1,0 +1,35 @@
+From c8a318f4e794d605c6eccf435d6a7da4a27f66ce Mon Sep 17 00:00:00 2001
+From: thp1997 <tirthpatel49@gmail.com>
+Date: Tue, 7 Feb 2017 07:17:37 +0000
+Subject: [PATCH] patch-set
+
+Change-Id: I25306a0bd2fac7bce77fc13a2b4d9c05ba0304db
+---
+ device/src/controller.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/device/src/controller.c b/device/src/controller.c
+index df00d68c..c5d8b74f 100755
+--- a/device/src/controller.c
++++ b/device/src/controller.c
+@@ -184,8 +184,10 @@ static future_t *start_up(void) {
+     page_number++;
+   }
+ 
++  ble_offload_features_supported = false;
++
+   // read BLE offload features support from controller
+-  response = AWAIT_COMMAND(packet_factory->make_ble_read_offload_features_support());
++  /*response = AWAIT_COMMAND(packet_factory->make_ble_read_offload_features_support());
+   packet_parser->parse_ble_read_offload_features_response(response, &ble_offload_features_supported);
+ 
+ #if (SC_MODE_INCLUDED == TRUE)
+@@ -196,7 +198,7 @@ static future_t *start_up(void) {
+       packet_parser->parse_generic_command_complete(response);
+     }
+   }
+-#endif
++#endif*/
+ 
+ #if (BLE_INCLUDED == TRUE)
+   ble_supported = last_features_classic_page_index >= 1 && HCI_LE_HOST_SUPPORTED(features_classic[1].as_array);

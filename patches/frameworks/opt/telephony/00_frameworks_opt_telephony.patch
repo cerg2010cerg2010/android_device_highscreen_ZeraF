@@ -1,0 +1,126 @@
+From 77ea0cb633daae46dfa32d7abc439729785cc9e6 Mon Sep 17 00:00:00 2001
+From: thp1997 <tirthpatel49@gmail.com>
+Date: Tue, 7 Feb 2017 06:23:27 +0000
+Subject: [PATCH] patch-set
+
+Change-Id: Ia1cf8cb6c78a60507a622242f80c29e066aabd82
+---
+ .../android/internal/telephony/SubscriptionController.java   | 12 ++++++++++++
+ .../android/internal/telephony/SubscriptionInfoUpdater.java  |  2 +-
+ src/java/com/android/internal/telephony/gsm/GSMPhone.java    |  7 ++++++-
+ .../com/android/internal/telephony/uicc/IccConstants.java    |  3 +++
+ .../com/android/internal/telephony/uicc/RuimRecords.java     |  7 ++++---
+ src/java/com/android/internal/telephony/uicc/SIMRecords.java |  7 ++++---
+ 6 files changed, 30 insertions(+), 8 deletions(-)
+
+diff --git a/src/java/com/android/internal/telephony/SubscriptionController.java b/src/java/com/android/internal/telephony/SubscriptionController.java
+index 2979a760..87e43a48 100644
+--- a/src/java/com/android/internal/telephony/SubscriptionController.java
++++ b/src/java/com/android/internal/telephony/SubscriptionController.java
+@@ -265,6 +265,13 @@ public void notifySubscriptionInfoChanged() {
+          broadcastSimInfoContentChanged();
+      }
+ 
++     private boolean isNumeric(String str) {
++         for (char c : str.toCharArray()) {
++             if (!Character.isDigit(c)) return false;
++         }
++         return true;
++     }
++
+     /**
+      * New SubInfoRecord instance and fill in detail info
+      * @param cursor
+@@ -309,6 +316,11 @@ private SubscriptionInfo getSubInfoRecord(Cursor cursor) {
+                 + " mcc:" + mcc + " mnc:" + mnc + " countIso:" + countryIso + " userNwMode:" + userNwMode);
+         }
+ 
++        if (isNumeric(carrierName)) {
++            carrierName = displayName;
++            logd("[getSubInfoRecord] carrierName changed to: " + displayName);
++        }
++
+         // If line1number has been set to a different number, use it instead.
+         String line1Number = mTelephonyManager.getLine1NumberForSubscriber(id);
+         if (!TextUtils.isEmpty(line1Number) && !line1Number.equals(number)) {
+diff --git a/src/java/com/android/internal/telephony/SubscriptionInfoUpdater.java b/src/java/com/android/internal/telephony/SubscriptionInfoUpdater.java
+index 24c0f2d3..c8ac89b9 100644
+--- a/src/java/com/android/internal/telephony/SubscriptionInfoUpdater.java
++++ b/src/java/com/android/internal/telephony/SubscriptionInfoUpdater.java
+@@ -309,7 +309,7 @@ public void handleMessage(Message msg) {
+                         mIccId[slotId] = ICCID_STRING_FOR_NO_SIM;
+                     }
+                 } else {
+-                    mIccId[slotId] = ICCID_STRING_FOR_NO_SIM;
++                    mIccId[slotId] = IccConstants.FAKE_ICCID;
+                     logd("Query IccId fail: " + ar.exception);
+                 }
+                 logd("sIccId[" + slotId + "] = " + mIccId[slotId]);
+diff --git a/src/java/com/android/internal/telephony/gsm/GSMPhone.java b/src/java/com/android/internal/telephony/gsm/GSMPhone.java
+index e2624dad..183e445e 100644
+--- a/src/java/com/android/internal/telephony/gsm/GSMPhone.java
++++ b/src/java/com/android/internal/telephony/gsm/GSMPhone.java
+@@ -1514,7 +1514,12 @@ private void updateCallForwardStatus() {
+             // Complete pending USSD
+ 
+             if (isUssdRelease) {
+-                found.onUssdRelease();
++                // MTK weirdness
++                if(ussdMessage != null) {
++                    found.onUssdFinished(ussdMessage, isUssdRequest);
++                } else {
++                    found.onUssdRelease();
++                }
+             } else if (isUssdError) {
+                 found.onUssdFinishedError();
+             } else {
+diff --git a/src/java/com/android/internal/telephony/uicc/IccConstants.java b/src/java/com/android/internal/telephony/uicc/IccConstants.java
+index d395fc18..2dadae62 100644
+--- a/src/java/com/android/internal/telephony/uicc/IccConstants.java
++++ b/src/java/com/android/internal/telephony/uicc/IccConstants.java
+@@ -107,4 +107,7 @@
+ 
+     //UICC access
+     static final String DF_ADF = "7FFF";
++
++    // Fake ICCID
++    static final String FAKE_ICCID = "00000000000001";
+ }
+diff --git a/src/java/com/android/internal/telephony/uicc/RuimRecords.java b/src/java/com/android/internal/telephony/uicc/RuimRecords.java
+index d348c812..8e5f4ab6 100644
+--- a/src/java/com/android/internal/telephony/uicc/RuimRecords.java
++++ b/src/java/com/android/internal/telephony/uicc/RuimRecords.java
+@@ -690,10 +690,11 @@ public void handleMessage(Message msg) {
+                 data = (byte[])ar.result;
+ 
+                 if (ar.exception != null) {
+-                    break;
++                    mIccId = FAKE_ICCID;
++                }
++                else {
++                    mIccId = IccUtils.bcdToString(data, 0, data.length);
+                 }
+-
+-                mIccId = IccUtils.bcdToString(data, 0, data.length);
+ 
+                 log("iccid: " + mIccId);
+ 
+diff --git a/src/java/com/android/internal/telephony/uicc/SIMRecords.java b/src/java/com/android/internal/telephony/uicc/SIMRecords.java
+index 8b6f7439..100abd77 100644
+--- a/src/java/com/android/internal/telephony/uicc/SIMRecords.java
++++ b/src/java/com/android/internal/telephony/uicc/SIMRecords.java
+@@ -874,10 +874,11 @@ public void handleMessage(Message msg) {
+                 data = (byte[])ar.result;
+ 
+                 if (ar.exception != null) {
+-                    break;
++                    mIccId = FAKE_ICCID;
++                }
++                else {
++                    mIccId = IccUtils.bcdToString(data, 0, data.length);
+                 }
+-
+-                mIccId = IccUtils.bcdToString(data, 0, data.length);
+ 
+                 log("iccid: " + mIccId);
+ 

@@ -1,0 +1,23 @@
+From aba651c7342dd63760f02cf50a29107aeadc1967 Mon Sep 17 00:00:00 2001
+From: thp1997 <tirthpatel49@gmail.com>
+Date: Tue, 7 Feb 2017 05:15:00 +0000
+Subject: [PATCH] patch-set
+
+Change-Id: I2c8560e0d0b96d86301b8206ddc1476fe28f7baf
+---
+ rsGrallocConsumer.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rsGrallocConsumer.cpp b/rsGrallocConsumer.cpp
+index f19f1719..20ec2d2d 100644
+--- a/rsGrallocConsumer.cpp
++++ b/rsGrallocConsumer.cpp
+@@ -70,7 +70,7 @@ status_t GrallocConsumer::lockNextBuffer() {
+         }
+     }
+ 
+-    BufferItem b;
++    BufferQueue::BufferItem b;
+ 
+     err = acquireBufferLocked(&b, 0);
+     if (err != OK) {

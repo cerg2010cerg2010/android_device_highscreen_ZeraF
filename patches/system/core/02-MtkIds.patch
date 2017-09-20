@@ -1,0 +1,37 @@
+commit 66201af4b34a63516e542cf16b19957f77f81edb
+Author: androidmeda <hephappy@gmail.com>
+Date:   Thu Nov 21 18:09:28 2013 +0200
+
+    Add MTK groups (-DTARGET_MTK)
+    
+    Change-Id: Ieae6a3cf8b14feecbab5be2db95abfa286a1ab97
+
+diff --git a/include/private/android_filesystem_config.h b/include/private/android_filesystem_config.h
+index 16efe58..5f497d8 100644
+--- a/include/private/android_filesystem_config.h
++++ b/include/private/android_filesystem_config.h
+@@ -104,6 +104,11 @@
+ #define AID_RFS           3012  /* Remote Filesystem for peripheral processors */
+ #define AID_RFS_SHARED    3013  /* Shared files for Remote Filesystem for peripheral processors  */
+ 
++#ifdef MTK_HARDWARE
++#define AID_CCCI          9996
++#define AID_NVRAM         9997
++#endif // MTK_HARDWARE
++
+ #define AID_EVERYBODY     9997  /* shared between all apps in the same profile */
+ #define AID_MISC          9998  /* access to misc storage */
+ #define AID_NOBODY        9999
+@@ -175,6 +180,10 @@ static const struct android_id_info android_ids[] = {
+ 
+     { "rfs",           AID_RFS, },
+     { "rfs_shared",    AID_RFS_SHARED, },
+
++#ifdef MTK_HARDWARE
++    { "nvram", AID_NVRAM, },
++    { "ccci", AID_CCCI, },
++#endif // MTK_HARDWARE
+     { "everybody",     AID_EVERYBODY, },
+     { "misc",          AID_MISC, },
+     { "nobody",        AID_NOBODY, },
+     

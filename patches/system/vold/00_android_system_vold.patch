@@ -1,0 +1,49 @@
+From ed4b3c48cd17b6c26ab30b59c8242c29f01352b0 Mon Sep 17 00:00:00 2001
+From: thp1997 <tirthpatel49@gmail.com>
+Date: Tue, 7 Feb 2017 07:23:37 +0000
+Subject: [PATCH] various fixes
+
+Change-Id: I70082f17a6e25a973f75a5777c4425fe72806cd6
+---
+ PublicVolume.cpp | 1 +
+ VolumeBase.cpp   | 2 ++
+ fs/Vfat.cpp      | 1 +
+ 3 files changed, 4 insertions(+)
+
+diff --git a/PublicVolume.cpp b/PublicVolume.cpp
+index bac6499..82c482d 100644
+--- a/PublicVolume.cpp
++++ b/PublicVolume.cpp
+@@ -161,6 +161,7 @@ status_t PublicVolume::doMount() {
+     } else {
+         LOG(WARNING) << getId() << " unsupported filesystem check, skipping";
+     }
++    if (ret == -2) return ret;
+     if (ret) {
+         LOG(ERROR) << getId() << " failed filesystem check";
+         return -EIO;
+diff --git a/VolumeBase.cpp b/VolumeBase.cpp
+index f45732b..39524d7 100644
+--- a/VolumeBase.cpp
++++ b/VolumeBase.cpp
+@@ -209,6 +209,8 @@ status_t VolumeBase::mount() {
+     status_t res = doMount();
+     if (res == OK) {
+         setState(State::kMounted);
++    } else if (res == -2) {
++        return destroy();
+     } else {
+         setState(State::kUnmountable);
+     }
+diff --git a/fs/Vfat.cpp b/fs/Vfat.cpp
+index faff763..4ea36cb 100644
+--- a/fs/Vfat.cpp
++++ b/fs/Vfat.cpp
+@@ -111,6 +111,7 @@ status_t Check(const std::string& source) {
+         default:
+             SLOGE("Filesystem check failed (unknown exit code %d)", rc);
+             errno = EIO;
++            if (rc == 8) return -2;
+             return -1;
+         }
+     } while (0);
