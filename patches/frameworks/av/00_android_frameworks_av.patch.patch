@@ -10015,7 +10015,7 @@ index 1a7dc9d9d..65a97da9c 100644
 +        BufferQueue::BufferItem item;
          status_t err = mConsumer->acquireBuffer(&item, 0);
          if (err == OK) {
-             mNumBufferAcquired++;
+             if (item.mBuf < 0 ||
 diff --git a/media/libstagefright/omx/GraphicBufferSource.h b/media/libstagefright/omx/GraphicBufferSource.h
 index 2f929d95c..d603308fe 100644
 --- a/media/libstagefright/omx/GraphicBufferSource.h

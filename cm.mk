@@ -1,17 +1,17 @@
 ## Specify phone tech before including full_phone
 
 # Release name
-PRODUCT_RELEASE_NAME := yaris_m_gsm
+PRODUCT_RELEASE_NAME := ZeraF
 
 # Inherit some common CM stuff.
 $(call inherit-product, vendor/cm/config/common_full_phone.mk)
 
 # Inherit device configuration
-$(call inherit-product, device/tct/yaris_m_gsm/device_yaris_m_gsm.mk)
+$(call inherit-product, device/Highscreen/ZeraF/device_Highscreen_ZeraF.mk)
 
 ## Device identifier. This must come after all inclusions
-PRODUCT_DEVICE := yaris_m_gsm
-PRODUCT_NAME := cm_yaris_m_gsm
-PRODUCT_BRAND := tct
-PRODUCT_MODEL := 4032A
-PRODUCT_MANUFACTURER := tct
+PRODUCT_DEVICE := ZeraF
+PRODUCT_NAME := lineage_ZeraF
+PRODUCT_BRAND := Highscreen
+PRODUCT_MODEL := ZeraF
+PRODUCT_MANUFACTURER := Highscreen

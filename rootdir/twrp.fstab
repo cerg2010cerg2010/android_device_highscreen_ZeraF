@@ -1,7 +1,7 @@
 /misc		emmc	/dev/misc
-/data		ext4	/dev/block/mmcblk0p9
-/system		ext4	/dev/block/mmcblk0p7
-/cache		ext4	/dev/block/mmcblk0p8
+/data		ext4	/emmc@usrdata
+/system		ext4	/emmc@android
+/cache		ext4	/emmc@cache
 /boot		emmc	/dev/bootimg
 /recovery	emmc	/dev/recovery
 /sdcard		vfat	/dev/block/mmcblk1p1	/dev/block/mmcblk1

@@ -1,1 +1,1 @@
-add_lunch_combo cm_yaris_m_gsm-userdebug
+add_lunch_combo lineage_ZeraF-userdebug

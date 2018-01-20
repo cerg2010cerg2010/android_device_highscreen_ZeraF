@@ -1,5 +1,5 @@
 #
-# system.prop for tct yaris_m_gsm
+# system.prop for Highscreen ZeraF
 #
 
 rild.libpath=/system/lib/mtk-ril.so
