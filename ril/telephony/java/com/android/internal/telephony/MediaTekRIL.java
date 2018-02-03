@@ -272,7 +272,7 @@ public class MediaTekRIL extends RIL implements CommandsInterface {
     setupDataCall(String radioTechnology, String profile, String apn,
             String user, String password, String authType, String protocol,
             Message result) {
-        int interfaceId=0;
+        int interfaceId=1;
         RILRequest rr
                 = RILRequest.obtain(RIL_REQUEST_SETUP_DATA_CALL, result);
 
@@ -287,13 +287,26 @@ public class MediaTekRIL extends RIL implements CommandsInterface {
         rr.mParcel.writeString(protocol);
 
         /* Find the first available interfaceId */
+	/*
         for (int i=0; i < 4; i++) {
             if (dataCallCids[i] < 0) {
                 interfaceId = i+1;
                 break;
             }
         }
-        rr.mParcel.writeString(interfaceId+"");
+        rr.mParcel.writeString(interfaceId+"");*/
+        rr.mParcel.writeString("1");
+
+        //VoLTE stub
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
+        rr.mParcel.writeString("");
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> "
                 + requestToString(rr.mRequest) + " " + radioTechnology + " "
@@ -498,7 +511,7 @@ public class MediaTekRIL extends RIL implements CommandsInterface {
         }
         return ret;
     }
-
+/*
     @Override
     public void
     iccIOForApp (int command, int fileid, String path, int p1, int p2, int p3,
@@ -508,6 +521,120 @@ public class MediaTekRIL extends RIL implements CommandsInterface {
             p3 = 15;
         }
         super.iccIOForApp(command, fileid, path, p1, p2, p3, data, pin2, aid, result);
+    }
+*/
+    @Override
+    public void
+    supplyIccPinForApp(String pin, String aid, Message result) {
+	//Note: This RIL request has not been renamed to ICC,
+	//       but this request is also valid for SIM and RUIM
+	RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PIN, result);
+
+	if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+	rr.mParcel.writeInt(2);
+	rr.mParcel.writeString(pin);
+	rr.mParcel.writeString(aid);
+
+	send(rr);
+    }
+
+    @Override
+    public void
+    supplyIccPukForApp(String puk, String newPin, String aid, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PUK, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mParcel.writeInt(3);
+        rr.mParcel.writeString(puk);
+        rr.mParcel.writeString(newPin);
+        rr.mParcel.writeString(aid);
+
+        send(rr);
+    }
+
+    @Override
+    public void
+    supplyIccPin2ForApp(String pin, String aid, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PIN2, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mParcel.writeInt(2);
+        rr.mParcel.writeString(pin);
+        rr.mParcel.writeString(aid);
+
+        send(rr);
+    }
+
+    @Override
+    public void
+    supplyIccPuk2ForApp(String puk, String newPin2, String aid, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ENTER_SIM_PUK2, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mParcel.writeInt(3);
+        rr.mParcel.writeString(puk);
+        rr.mParcel.writeString(newPin2);
+        rr.mParcel.writeString(aid);
+
+        send(rr);
+    }
+
+    @Override public void
+    changeIccPinForApp(String oldPin, String newPin, String aid, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_CHANGE_SIM_PIN, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mParcel.writeInt(3);
+        rr.mParcel.writeString(oldPin);
+        rr.mParcel.writeString(newPin);
+        rr.mParcel.writeString(aid);
+
+        send(rr);
+    }
+
+    @Override public void
+    changeIccPin2ForApp(String oldPin2, String newPin2, String aid, Message result) {
+        //Note: This RIL request has not been renamed to ICC,
+        //       but this request is also valid for SIM and RUIM
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_CHANGE_SIM_PIN2, result);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        rr.mParcel.writeInt(3);
+        rr.mParcel.writeString(oldPin2);
+        rr.mParcel.writeString(newPin2);
+        rr.mParcel.writeString(aid);
+
+        send(rr);
+    }
+
+    @Override
+    public void handleCallSetupRequestFromSim(
+            boolean accept, Message response) {
+
+        RILRequest rr = RILRequest.obtain(
+            RILConstants.RIL_REQUEST_STK_HANDLE_CALL_SETUP_REQUESTED_FROM_SIM,
+            response);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        int[] param = new int[1];
+        param[0] = accept ? 1 : 0;
+        rr.mParcel.writeIntArray(param);
+        send(rr);
     }
 
 }
